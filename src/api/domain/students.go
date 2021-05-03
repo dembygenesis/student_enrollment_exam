@@ -12,3 +12,8 @@ type CreateStudent struct {
 	Email string `json:"email"`
 	Phone string `json:"phone"`
 }
+
+type EnrollStudent struct {
+	StudentId int `json:"student_id"`
+	CourseId  int `json:"course_id"`
+}
