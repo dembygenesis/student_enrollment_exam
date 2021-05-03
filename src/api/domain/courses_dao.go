@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"github.com/dembygenesis/student_enrollment_exam/src/api/utils"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -12,6 +13,7 @@ type courseDaoInterface interface {
 	IsValidId(courseId int) (bool, error)
 	DeleteCourse(courseId int) error
 	HasStudentsEnrolled(courseId int) (bool, error)
+	GetEnrolledStudents(courseId int) (*[]Student, error)
 }
 
 type courseDao struct {
@@ -102,4 +104,35 @@ func (s *courseDao) HasStudentsEnrolled(id int) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (s *courseDao) GetEnrolledStudents(courseId int) (*[]Student, error) {
+	var students []Student
+	sql := `
+		SELECT
+		  s.student_id AS id,
+		  s.student_name AS ` + utils.EncloseString("name", "`") + `,
+		  s.student_email AS email,
+		  s.student_phone AS phone,
+		  IF(GROUP_CONCAT(c.course_name) IS NULL, "", GROUP_CONCAT(c.course_name)) AS courses_enrolled
+		FROM
+		  student s
+		  LEFT JOIN students_enrolled se
+			ON 1 = 1
+			AND s.student_id = se.student_ref_id
+		  LEFT JOIN course c
+			ON 1 = 1
+			AND se.course_ref_id = c.course_id
+		WHERE 1 = 1
+    		AND se.course_ref_id = ?
+		GROUP BY s.student_id
+	`
+
+	err := s.client.Select(&students, sql, courseId)
+
+	if len(students) == 0 {
+		return nil, errors.New("no students enrolled in this course_id")
+	}
+
+	return &students, err
 }

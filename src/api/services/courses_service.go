@@ -17,6 +17,27 @@ func init() {
 	CourseService = &courseService{}
 }
 
+func (s *courseService) GetEnrolledStudents(courseId int) (*[]domain.Student, error) {
+	// Quick validations to prevent hitting the database
+	if courseId == 0 {
+		return nil, errors.New("student_id is invalid")
+	}
+
+	// Validate course_id
+	isValidCourseId, err := domain.CourseDao.IsValidId(courseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if isValidCourseId == false {
+		return nil, errors.New("course_id is invalid")
+	}
+
+	// Perform fetch
+	return domain.CourseDao.GetEnrolledStudents(courseId)
+}
+
 func (s *courseService) Create(name string, professor string, description string) error {
 	// Quick validations to prevent hitting the database
 	if name == "" {

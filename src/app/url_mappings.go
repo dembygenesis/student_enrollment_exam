@@ -9,6 +9,7 @@ func mapUrls() {
 	router.POST("/student/enroll", controllers.StudentController.Enroll)
 
 	// Course
+	router.GET("/course/:course_id", controllers.CourseController.GetEnrolledStudents)
 	router.POST("/course", controllers.CourseController.Create)
 	router.DELETE("/course/:course_id", controllers.CourseController.DeleteCourse)
 }
