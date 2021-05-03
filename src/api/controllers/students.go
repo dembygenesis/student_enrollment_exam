@@ -36,7 +36,6 @@ func (controller *studentController) Enroll(c *gin.Context) {
 	}
 
 	// Perform enroll
-	// err := domain.StudentDao.Enroll(body.StudentId, body.CourseId)
 	err := services.StudentService.Enroll(body.StudentId, body.CourseId)
 
 	if err != nil {

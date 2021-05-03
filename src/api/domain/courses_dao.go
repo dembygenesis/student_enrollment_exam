@@ -9,6 +9,7 @@ import (
 type courseDaoInterface interface {
 	Create(name string, professor string, description string) error
 	SetClient()
+	IsValidId(studentId int) (bool, error)
 }
 
 type courseDao struct {
@@ -47,4 +48,25 @@ func (s *courseDao) Create(name string, professor string, description string) er
 	_, err := s.client.Exec(sql, name, professor, description)
 
 	return err
+}
+
+func (s *courseDao) IsValidId(id int) (bool, error) {
+	var count int
+	sql := `
+		SELECT COUNT(*) AS countt
+		FROM course 
+		WHERE course_id = ?
+	`
+
+	err := s.client.Get(&count, sql, id)
+
+	if err != nil {
+		return false, err
+	}
+
+	if count == 0 {
+		return false, nil
+	}
+
+	return true, nil
 }
