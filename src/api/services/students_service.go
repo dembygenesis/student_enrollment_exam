@@ -55,8 +55,8 @@ func (s *studentService) Enroll(studentId int, courseId int) error {
 	}
 
 	// Perform insert
+	err = domain.StudentDao.Enroll(studentId, courseId)
 
-	return nil
+	return err
 
-	// return domain.StudentDao.Create(name, email, phone)
 }
