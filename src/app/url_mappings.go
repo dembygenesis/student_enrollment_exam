@@ -10,4 +10,5 @@ func mapUrls() {
 
 	// Course
 	router.POST("/course", controllers.CourseController.Create)
+	router.DELETE("/course/:course_id", controllers.CourseController.DeleteCourse)
 }

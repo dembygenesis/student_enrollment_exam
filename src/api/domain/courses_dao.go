@@ -9,7 +9,8 @@ import (
 type courseDaoInterface interface {
 	Create(name string, professor string, description string) error
 	SetClient()
-	IsValidId(studentId int) (bool, error)
+	IsValidId(courseId int) (bool, error)
+	DeleteCourse(courseId int) error
 }
 
 type courseDao struct {
@@ -70,3 +71,14 @@ func (s *courseDao) IsValidId(id int) (bool, error) {
 
 	return true, nil
 }
+
+func (s *courseDao) DeleteCourse(id int) error {
+	sql := `
+		DELETE FROM course 
+		WHERE course_id = ?
+	`
+
+	_, err := s.client.Exec(sql, id)
+	return err
+}
+

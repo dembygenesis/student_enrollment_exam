@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"github.com/dembygenesis/student_enrollment_exam/src/api/domain"
+	"github.com/dembygenesis/student_enrollment_exam/src/api/services"
 	"github.com/dembygenesis/student_enrollment_exam/src/api/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type courseController struct {
@@ -17,6 +19,37 @@ var (
 
 func init() {
 	CourseController = &courseController{}
+}
+
+func (controller *courseController) DeleteCourse(c *gin.Context) {
+	// Validate params
+	courseId, err := strconv.ParseInt(c.Param("course_id"), 10, 64)
+	if err != nil {
+		apiErr := &utils.ApplicationError{
+			Message: "course_id must be a number",
+			StatusCode: http.StatusBadRequest,
+			Code: "bad_request",
+		}
+		utils.RespondError(c, apiErr)
+		return
+	}
+
+	// Perform delete
+	err = services.CourseService.DeleteCourse(int(courseId))
+
+	if err != nil {
+		apiErr := &utils.ApplicationError{
+			Message:    "Error when attempting to delete the course: " + err.Error(),
+			StatusCode: http.StatusBadRequest,
+			Code:       "bad_request",
+		}
+
+		utils.RespondError(c, apiErr)
+		return
+	}
+
+	utils.Respond(c, http.StatusOK, "Successfully deleted the course!")
+	return
 }
 
 func (controller *courseController) Create(c *gin.Context) {
@@ -33,7 +66,8 @@ func (controller *courseController) Create(c *gin.Context) {
 		return
 	}
 
-	err := domain.CourseDao.Create(body.Name, body.Professor, body.Description)
+	// err := domain.CourseDao.Create(body.Name, body.Professor, body.Description)
+	err := services.CourseService.Create(body.Name, body.Professor, body.Description)
 
 	if err != nil {
 		apiErr := &utils.ApplicationError{
