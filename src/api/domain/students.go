@@ -1,10 +1,11 @@
 package domain
 
 type Student struct {
-	Id    int    `json:"id"`
-	Name  string `json:"string"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	Id              int    `json:"id" db:"id"`
+	Name            string `json:"name" db:"name"`
+	Email           string `json:"email" db:"email"`
+	Phone           string `json:"phone" db:"phone"`
+	CoursesEnrolled string `json:"courses_enrolled" db:"courses_enrolled"`
 }
 
 type CreateStudent struct {

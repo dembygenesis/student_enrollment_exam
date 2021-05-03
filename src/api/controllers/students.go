@@ -53,6 +53,24 @@ func (controller *studentController) Enroll(c *gin.Context) {
 	return
 }
 
+func (controller *studentController) GetStudents(c *gin.Context) {
+	// Perform fetch
+	students, err := services.StudentService.GetStudents()
+
+	if err != nil {
+		apiErr := &utils.ApplicationError{
+			Message:    "Error when attempting to fetch the student data : " + err.Error(),
+			StatusCode: http.StatusInternalServerError,
+			Code:       "bad_request",
+		}
+
+		utils.RespondError(c, apiErr)
+		return
+	}
+
+	utils.Respond(c, http.StatusOK, students)
+}
+
 func (controller *studentController) Create(c *gin.Context) {
 	// Validate params
 	var body domain.CreateStudent
