@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/dembygenesis/student_enrollment_exam/src/api/domain"
 	"github.com/dembygenesis/student_enrollment_exam/src/api/utils"
 	"github.com/gin-gonic/gin"
@@ -37,7 +36,14 @@ func (controller *courseController) Create(c *gin.Context) {
 	err := domain.CourseDao.Create(body.Name, body.Professor, body.Description)
 
 	if err != nil {
-		fmt.Println("I have an error after inserting the course", err.Error())
+		apiErr := &utils.ApplicationError{
+			Message:    "Error when attempting to insert course data : " + err.Error(),
+			StatusCode: http.StatusBadRequest,
+			Code:       "bad_request",
+		}
+
+		utils.RespondError(c, apiErr)
+		return
 	}
 
 	utils.Respond(c, http.StatusOK, "Successfully created the course!")
