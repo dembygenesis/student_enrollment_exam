@@ -39,6 +39,7 @@ func (s *courseService) DeleteCourse(courseId int) error {
 		return errors.New("course_id is invalid")
 	}
 
+	// Validate course_id entry
 	isValidCourseId, err := domain.CourseDao.IsValidId(courseId)
 
 	if err != nil {
@@ -47,6 +48,17 @@ func (s *courseService) DeleteCourse(courseId int) error {
 
 	if isValidCourseId == false {
 		return errors.New("course_id is invalid")
+	}
+
+	// Validate no students enrolled before deleting
+	hasStudentsEnrolled, err := domain.CourseDao.HasStudentsEnrolled(courseId)
+
+	if err != nil {
+		return err
+	}
+
+	if hasStudentsEnrolled == true {
+		return errors.New("cannot delete a course_id with students enrolled")
 	}
 
 	return domain.CourseDao.DeleteCourse(courseId)

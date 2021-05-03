@@ -11,6 +11,7 @@ type courseDaoInterface interface {
 	SetClient()
 	IsValidId(courseId int) (bool, error)
 	DeleteCourse(courseId int) error
+	HasStudentsEnrolled(courseId int) (bool, error)
 }
 
 type courseDao struct {
@@ -82,3 +83,23 @@ func (s *courseDao) DeleteCourse(id int) error {
 	return err
 }
 
+func (s *courseDao) HasStudentsEnrolled(id int) (bool, error) {
+	var count int
+	sql := `
+		SELECT COUNT(*) AS countt
+		FROM students_enrolled 
+		WHERE course_ref_id = ?
+	`
+
+	err := s.client.Get(&count, sql, id)
+
+	if err != nil {
+		return false, err
+	}
+
+	if count == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
